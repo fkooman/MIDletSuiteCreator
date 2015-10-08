@@ -1,0 +1,151 @@
+                        === MIDlet Suite Creator ===
+                      http://nfcip-java.googlecode.com
+						 
+               François Kooman <F.Kooman@student.science.ru.nl>
+               								
+Introduction
+============
+This MIDlet Suite Generator creates a template working directory for use with 
+Ant and JAD Ant Tasks created to use only free software to construct MIDlet 
+Suites.
+
+This script lets you specify the most commonly used parameters for a MIDlet 
+Suite and generates all the files required. It generates a "Hello World" 
+MIDlet which makes the project immediately ready for installation on a mobile 
+phone.
+
+Creating a MIDlet Suite
+=======================
+
+Example run of the script with leaving everything in default settings except
+opt to download the libraries:
+
+	$ sh create_midlet_suite.sh 
+	Enter project name [MyProject]: 
+	Enter project description [My MIDlet Suite]: 
+	Enter project version [1.0.0]: 
+	Enter target project location [/../../../MyProject]: 
+	Enter MIDlet Suite vendor [MIDlet Suite Vendor]: 
+	Enter MIDlet [1] Name [MyMIDlet]: 
+	Enter MIDlet [1] Package []: 
+	Enter MIDlet Suite Configuration [CLDC-1.1]: 
+	Enter MIDlet Suite Profile [MIDP-2.0]: 
+	Would you like to download the required libraries now [y|n]? y
+
+	Downloading required libraries...
+	[..]
+	Done.
+	$ 
+
+
+Modifying the MIDlet Suite
+==========================
+Afterwards a "build.xml" can be found in the target project location. This can
+be modified at will and is just a template that defines the most commonly used
+build targets:
+	
+	$ ant -p
+	Buildfile: build.xml
+	My MIDlet Suite
+	Main targets:
+
+	 clean      Clean up
+	 compile    Compile the source
+	 deploy     Deploy the MIDlet Suite
+	 dist       Create the distribution
+	 init       Initialize
+	 preverify  Preverify the code for Java ME
+	 sign       Sign the MIDlet Suite
+	Default target: compile
+
+Often one will only use the "clean", "deploy" and "sign" tasks. The rest are 
+dependencies of those.
+
+By default only the MIDP-2.0, CLDC-1.1 and some additional libraries are 
+included in the build path of the MIDlet Suite. To add more libraries one 
+has to perform two steps:
+
+  - add them to the lib/lib.properties file
+      For example we want to use Bluetooth (JSR-82) and BouncyCastle in our 
+      MIDlet we would add these lines to lib.properties:
+
+	jsr-82.jar=${lib}/microemulator/lib/microemu-jsr-82.jar
+	bouncy.jar=${lib}/lcrypto-j2me-141/zips/cldc_classes.zip
+
+      (make sure the libraries can be found at those locations!)
+
+  - add them to the me.phone.lib section in build.xml 
+      the library should be added here if an implementation of the library is 
+      available on the phone itself. This is the case for the Bluetooth API 
+      described above:
+
+        <path id="me.phone.lib">
+		<pathelement location="${jsr-75.jar}" />
+
+			... other libraries ...
+
+                <pathelement location="${jsr-82.jar}" />
+        </path>
+
+  - add them to the me.app.lib section in build.xml
+      the library should be added here if an implementation of the library is
+      NOT available on the phone itself. This is the case for the BouncyCastle
+      library:
+
+        <path id="me.app.lib">
+                <pathelement location="${bouncy.jar} />
+        </path>
+
+  - in case you use (big) libraries but only use a small portion of their code
+    it makes sense to use set shrink="true" in the build.xml file. In case 
+    you use for instance the java.math.BigInteger class of BouncyCastle it is 
+    also required to enabled obfuscation, with obfuscation="true".
+
+Deploying the MIDlet Suite
+==========================
+To deploy the MIDlet Suite one would use:
+
+  $ ant deploy
+
+This will create the MIDlet Suite JAD and JAR file in the "deployed" directory.
+
+Signing a MIDlet Suite
+======================
+To sign the MIDlet Suite one would use:
+
+  $ ant sign
+
+This will add the signatures and certificate chain to the JAD file in the 
+"deployed" directory.
+
+For this to work the "sign.properties.default" needs to be copied to 
+"sign.properties" and modified to contain the correct key store information.
+
+MIDlet Suite Permissions
+========================
+Some actions may require permission declarations in the Application Descriptor.
+These can be added to the file "Application Descriptor" in the project 
+directory:
+
+MIDlet-Permissions: javax.microedition.io.Connector.file.read, 
+                    javax.microedition.io.Connector.file.write
+
+This is used to request access to reading and writing on the phone file system. 
+See JSR-75 FileConnection API.
+
+Extra MIDlets
+=============
+It is possible to add extra MIDlets to the MIDlet Suite, by adding them to the 
+Application Descriptor as well:
+
+MIDlet-1: MIDlet Name One,,com.example.MyMIDletOne
+MIDlet-2: MIDlet Name Two,,com.example.MyMIDletTwo
+
+The first part is the MIDlet name, the second part is the location of the 
+icon (which is omitted here) and the third part is the MIDlet class to load.
+
+References
+==========
+BouncyCastle: http://www.bouncycastle.org/
+MicroEmulator: http://www.microemu.org/
+

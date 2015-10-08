@@ -1,0 +1,7 @@
+MIDlet-Vendor: SUITE_VENDOR
+MIDlet-Version: PROJECT_VERSION
+MicroEdition-Configuration: SUITE_CONFIG
+MicroEdition-Profile: SUITE_PROFILE
+MIDlet-1: MIDLET_NAME,SUITE_ICON,MIDLET_CLASS
+MIDlet-Name: PROJECT_NAME MIDlet Suite
+
