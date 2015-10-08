@@ -1,0 +1,30 @@
+                          === JSR-257 Extensions Nokia Stub ===
+                       http://nfcip-java.googlecode.com
+						 
+               François Kooman <F.Kooman@student.science.ru.nl>
+     
+Introduction
+============          
+This library contains stub classes for the Nokia JSR-257 extensions API that 
+deal with the NFCIP Peer 2 Peer communication. It is used to compile the 
+MIDlet, but doesn't actually contain any code.
+
+Building
+========
+The easiest way to build this project is to use Ant, but also Eclipse can be 
+used. We assume that you already have Java 6 installed (OpenJDK is fine). The
+library is compiled with Java source compatibility for version 1.4 as that is 
+required for code running on Java ME phones.
+
+  $ ant dist
+
+Will generate a JAR file in the "dist" directory ready for use. This library 
+can be added to the classpath when compiling Java ME applications. In case you 
+use Eclipse (MTJ) you can add it as a library belonging to the phone, and not 
+as a library for the project!
+
+Using
+=====
+This library implements the Nokia JSR 257 Extensions API. Documentation on how
+to use it can be found online at different sources (and in the Nokia 
+documentation belonging to the SDK). 
