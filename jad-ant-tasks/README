@@ -1,0 +1,78 @@
+                          === JAD Ant Tasks ===
+                       http://nfcip-java.googlecode.com
+						 
+               François Kooman <F.Kooman@student.science.ru.nl>
+               								
+Introduction
+============
+This Ant task is meant to make it easy to package Java ME applications in a 
+MIDlet Suite. It takes care of generating the Application Descriptor (JAD file) 
+and optionally signing the MIDlet Suite.
+ 
+Building
+========
+The easiest way to build this project is to use Ant, but also Eclipse can be 
+used. We assume that you already have Java 6 installed (OpenJDK is fine).
+
+  $ ant dist
+
+Will generate a JAR file in the "dist" directory ready for use.
+
+Creating the Application Descriptor
+===================================
+You can load the JAD Ant task in your Ant "build.xml" file:
+
+    <taskdef resource="task.properties" 
+             classpath="/path/to/jad-ant-tasks.jar" />
+
+Make sure the path is correct. Now create a JAR file containing the 
+preverified (using e.g. ProGuard) Java classes with a MANIFEST specific for the 
+Java ME platform. Here is an example of creating this JAR file:
+
+    <jar jarfile="MyMIDletSuite.jar" basedir="${build}">
+        <manifest>
+            <attribute name="MIDlet-Version" value="1.0" />
+            <attribute name="MIDlet-Vendor" value="SnakeOil Inc." />
+            <attribute name="MicroEdition-Configuration" value="CLDC-1.1" />
+            <attribute name="MicroEdition-Profile" value="MIDP-2.0" />
+            <attribute 
+                name="MIDlet-1" value="MyMIDlet,,com.example.MyMIDlet" />
+            <attribute name="MIDlet-Name" value="MyMIDlet Suite" />
+        </manifest>
+    </jar>
+
+Now specify the location of the JAR and JAD file. The Manifest is extracted 
+from of the JAR file and put in the JAD file together with extra properties 
+containing the JAR file size and the JAR file name. 
+  
+    <jad jad="/path/to/MyMIDletSuite.jad" 
+         jar="/path/to/MyMIDletSuite.jar" />
+
+This will add the properties
+
+    MIDlet-Jar-Size: <actual JAR file size>
+    MIDlet-Jar-URL: MyMIDletSuite.jar
+
+Signing the MIDlet Suite
+========================
+
+This would be the relevant section in the "build.xml" file:
+
+    <property file="sign.properties" />
+
+    <sign keystore="${keystore}" 
+          keystorepass="${keystorepass}" 
+          keypass="${keypass}" 
+          keyentryalias="${keyentryalias}" 
+          jar="/path/to/MyMIDletSuite.jar" 
+          jad="/path/to/MyMIDletSuite.jad" />
+
+And now in the sign.properties file one would put something like:
+
+    keystore=/path/to/keystore.ks  (default is: ${user.home}/.keystore)
+    keystorepass=password
+    keypass=password
+    keyentryalias=alias
+
+That is all!
+
